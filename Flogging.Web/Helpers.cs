@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Security.Claims;
 using System.Web;
+using Newtonsoft.Json;
 
 namespace Flogging.Web
 {
@@ -41,7 +42,7 @@ namespace Flogging.Web
             Dictionary<string, object> diagnosticInfo = null)
         {
             var writeDiagnostics = Convert.ToBoolean(ConfigurationManager.AppSettings["EnableDiagnostics"]);
-            if (!writeDiagnostics)  // doing this to avoid going through all the data - user, session, etc.
+            if (!writeDiagnostics) // doing this to avoid going through all the data - user, session, etc.
                 return;
 
             string userId, userName, location;
@@ -91,14 +92,13 @@ namespace Flogging.Web
 
         public static void GetHttpStatus(Exception ex, out int httpStatus)
         {
-            httpStatus = 500;  // default is server error
+            httpStatus = 500; // default is server error
             if (ex is HttpException)
             {
                 var httpEx = ex as HttpException;
                 httpStatus = httpEx.GetHttpCode();
             }
         }
-
 
 
         // Add Assemblies ref to Flogger.Core and System.Web
@@ -130,7 +130,7 @@ namespace Flogging.Web
                 GetBrowserInfo(request, out type, out version);
                 data.Add("Browser", $"{type}{version}");
                 data.Add("UserAgent", request.UserAgent);
-                data.Add("Languages", request.UserLanguages);  // non en-US preferences here??
+                data.Add("Languages", request.UserLanguages); // non en-US preferences here??
                 foreach (var qsKey in request.QueryString.Keys)
                 {
                     data.Add(string.Format("QueryString-{0}", qsKey),
@@ -138,6 +138,7 @@ namespace Flogging.Web
                 }
             }
         }
+
         private static void GetBrowserInfo(HttpRequest request, out string type, out string version)
         {
             type = request.Browser.Type;
@@ -150,7 +151,7 @@ namespace Flogging.Web
             else
             {
                 version = " (v " + request.Browser.MajorVersion + "." +
-                    request.Browser.MinorVersion + ")";
+                          request.Browser.MinorVersion + ")";
             }
         }
 
@@ -175,6 +176,7 @@ namespace Flogging.Web
                 }
             }
         }
+
         private static void GetSessionData(Dictionary<string, object> data)
         {
             if (HttpContext.Current.Session != null)
@@ -184,10 +186,21 @@ namespace Flogging.Web
                     var keyName = key.ToString();
                     if (HttpContext.Current.Session[keyName] != null)
                     {
-                        data.Add(string.Format("Session-{0}", keyName),
-                            HttpContext.Current.Session[keyName].ToString());
+                        var myObject = HttpContext.Current.Session[keyName];
+
+                        if (myObject.GetType().IsClass)
+                        {
+                            var value = JsonConvert.SerializeObject(myObject);
+                            data.Add(string.Format("Session-{0}", keyName),value);
+                        }
+                        else
+                        {
+                            data.Add(string.Format("Session-{0}", keyName),
+                                HttpContext.Current.Session[keyName].ToString());
+                        }
                     }
                 }
+
                 data.Add("SessionId", HttpContext.Current.Session.SessionID);
             }
         }

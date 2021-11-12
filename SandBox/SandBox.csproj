@@ -201,6 +201,7 @@
     <Compile Include="Site.Mobile.Master.designer.cs">
       <DependentUpon>Site.Mobile.Master</DependentUpon>
     </Compile>
+    <Compile Include="UserInfo.cs" />
     <Compile Include="ViewSwitcher.ascx.cs">
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -222,6 +223,16 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Flogging.Core\Flogging.Core.csproj">
+      <Project>{c0cc816e-a6c4-4b36-bffa-72478f558ceb}</Project>
+      <Name>Flogging.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Flogging.Web\Flogging.Web.csproj">
+      <Project>{4b3f3b20-4ce7-4cf7-b293-5c5c50d84b51}</Project>
+      <Name>Flogging.Web</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

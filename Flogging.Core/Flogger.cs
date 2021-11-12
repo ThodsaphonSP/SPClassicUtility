@@ -25,6 +25,9 @@ namespace Flogging.Core
 
             var connectionString = ConfigurationManager.AppSettings["logConnectionString"];
 
+            int batchPostingLimit = Convert.ToInt32(ConfigurationManager.AppSettings["batchPostingLimit"]);
+
+
 
            var performLogger = new LoggerConfiguration();
                 // .WriteTo.File(path: "C:\\repo\\edahl\\Source\\perf.txt");
@@ -48,20 +51,20 @@ namespace Flogging.Core
             if (!string.IsNullOrEmpty(connectionString))
             {
                 performLogger.WriteTo.MSSqlServer(connectionString, "performs", autoCreateSqlTable: true,
-                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: 1);
+                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: batchPostingLimit);
             }
             
             if (!string.IsNullOrEmpty(connectionString))
             {
                 tempUsageLogger.WriteTo.MSSqlServer(connectionString, "Usage", autoCreateSqlTable: true,
-                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: 1);
+                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: batchPostingLimit);
             }
 
 
             if (!string.IsNullOrEmpty(connectionString))
             {
                 tempErrorLogger.WriteTo.MSSqlServer(connectionString, "error", autoCreateSqlTable: true,
-                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: 1);
+                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: batchPostingLimit);
             }
 
 
@@ -70,7 +73,7 @@ namespace Flogging.Core
             if (!string.IsNullOrEmpty(connectionString))
             {
                 tempDiagnostic.WriteTo.MSSqlServer(connectionString, "DiagnosticLogs", autoCreateSqlTable: true,
-                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: 1);
+                    columnOptions: GetSqlColumnOptions(), batchPostingLimit: batchPostingLimit);
             }
 
             _perfLogger = performLogger.CreateLogger();
@@ -116,7 +119,7 @@ namespace Flogging.Core
 
         public static void WritePerf(FlogDetail infoToLog)
         {
-            _perfLogger.Write(LogEventLevel.Information, "{@FlogDetail}", infoToLog);
+            // _perfLogger.Write(LogEventLevel.Information, "{@FlogDetail}", infoToLog);
 
             _perfLogger.Write(LogEventLevel.Information,
                 "{Timestamp}{Message}{Layer}{Location}{Product}" +
